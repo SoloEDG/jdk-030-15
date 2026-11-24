@@ -1,4 +1,3 @@
-import { createId } from "@/shared/document";
 import type {
   BoxKind,
   FloorMorph,
@@ -188,7 +187,11 @@ export function hydrate(blueprint: LevelBlueprint): RuntimeLevel {
     height: blueprint.rows.length,
     tiles: tilesOf(blueprint.rows),
     player: { ...blueprint.player },
-    boxes: blueprint.boxes.map((box) => ({ ...box, id: createId(box.kind) })),
+    boxes: blueprint.boxes.map((box, index) => ({
+      ...box,
+      // id 必须跨重开稳定：推迹按 boxId 记录货位腾空，随机 id 会让旧推迹无法重放。
+      id: `box-${blueprint.id}-${index}`,
+    })),
     plates: blueprint.plates.map((plate, index) => ({
       ...plate,
       id: `p-${blueprint.id}-${index}`,

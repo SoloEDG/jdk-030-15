@@ -1,9 +1,10 @@
 import { computed, type Ref } from "vue";
 import { LEVELS, getLevel, hydrate } from "../lib/catalog";
-import { betterRecord, readSave, writeSave } from "../lib/persist";
+import { readSave, writeSave } from "../lib/persist";
 import { evaluateGadgets } from "@/features/gadget";
+import { commitMethodRecord, type MethodCommit } from "@/features/ledger/lib/method";
 import { freshAttempt } from "@/features/ledger";
-import type { GameDocument } from "@/shared/types";
+import type { GameDocument, PushTrace } from "@/shared/types";
 
 export function loadInitial(): GameDocument {
   const saved = readSave();
@@ -29,6 +30,7 @@ export function useVoyage(document: Ref<GameDocument>) {
       title: level.title,
       blurb: level.blurb,
       bestSteps: document.value.records[level.id]?.bestSteps ?? null,
+      methodCount: document.value.records[level.id]?.methods?.length ?? 0,
       current: level.id === document.value.currentLevelId,
     })),
   );
@@ -38,6 +40,7 @@ export function useVoyage(document: Ref<GameDocument>) {
         id,
         title: LEVELS.find((level) => level.id === id)?.title ?? id,
         bestSteps: record.bestSteps,
+        methodCount: record.methods?.length ?? 0,
         clearedAt: record.clearedAt,
       }))
       .sort((a, b) => a.bestSteps - b.bestSteps),
@@ -45,7 +48,7 @@ export function useVoyage(document: Ref<GameDocument>) {
 
   function persist(): void {
     writeSave({
-      version: 1,
+      version: 2,
       currentLevelId: document.value.currentLevelId,
       records: document.value.records,
     });
@@ -64,11 +67,20 @@ export function useVoyage(document: Ref<GameDocument>) {
     openLevel(document.value.currentLevelId);
   }
 
-  function commitClear(): void {
+  function commitClear(): MethodCommit {
     const id = document.value.currentLevelId;
     const steps = document.value.attempt.steps;
-    document.value.records[id] = betterRecord(document.value.records[id], steps, Date.now());
+    const trace: PushTrace[] = document.value.attempt.trace;
+    const commit = commitMethodRecord(
+      document.value.level,
+      document.value.records[id],
+      trace,
+      steps,
+      Date.now(),
+    );
+    document.value.records[id] = commit.record;
     persist();
+    return commit;
   }
 
   return { catalog, completed, openLevel, resetLevel, commitClear, persist };

@@ -32,12 +32,17 @@ export function useWorkshop() {
       return;
     }
     gadget.refresh();
-    const tick = ledger.afterMove(result);
+    const tick = ledger.afterMove(dir, result);
     if (tick.cleared) {
-      voyage.commitClear();
+      const commit = voyage.commitClear();
+      const pushText = `${document.value.attempt.pushes} 推`;
+      const swapText = commit.links.length > 0 ? `（规范化时连续交换 ${commit.links.length} 次相邻推后比对）` : "";
+      const tail = commit.matched
+        ? `归入已有工法${swapText}，${commit.improved ? "实走步数刷新该工法最优。" : "步数没有更省，工法最优保持不变。"}`
+        : `识别出一种新工法（${pushText}），已单独入账。`;
       notify({
         tone: "success",
-        message: `通关，用了 ${document.value.attempt.steps} 步。最佳记录已写入目录。`,
+        message: `通关，实走 ${document.value.attempt.steps} 步、${pushText}。${tail}`,
       });
     }
   }

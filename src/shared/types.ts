@@ -57,12 +57,44 @@ export interface RuntimeLevel {
 
 export interface Attempt {
   steps: number;
+  /** 真正改变货位的推箱次数。 */
+  pushes: number;
   status: AttemptStatus;
+  /** 本次尝试中每次推箱的推迹，按发生顺序记录。 */
+  trace: PushTrace[];
+}
+
+/** 一次真正改变货位的推箱：箱从 from 被推向 to，推前站在 from。 */
+export interface PushTrace {
+  boxId: string;
+  kind: BoxKind;
+  dir: Dir;
+  from: Vec;
+  to: Vec;
+  playerBefore: Vec;
+  playerAfter: Vec;
+  /** 这一推落地、机关结算后的门状态，按门 id 记录。 */
+  doorsAfter: Record<string, boolean>;
+  /** 这一推落地、机关结算后的地板状态，按地板 id 记录。 */
+  floorsAfter: Record<string, boolean>;
+}
+
+/** 同一工法下的一条成绩。 */
+export interface MethodRecord {
+  /** 工法指纹：对推迹序列做归一化（相邻可交换推取规范序）后的哈希。 */
+  fingerprint: string;
+  bestSteps: number;
+  bestPushes: number;
+  clearedAt: number;
+  /** 生成该工法的推迹；老版本留下的无推迹成绩没有此字段。 */
+  trace?: PushTrace[];
 }
 
 export interface LevelRecord {
   bestSteps: number;
   clearedAt: number;
+  /** 按搬运工法分别记账；无推迹的老成绩不在此列。 */
+  methods?: MethodRecord[];
 }
 
 export interface GameDocument {

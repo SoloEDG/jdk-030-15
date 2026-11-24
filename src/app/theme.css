@@ -137,6 +137,61 @@ canvas { display: block; image-rendering: pixelated; }
 .records li { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; }
 .records small { grid-column: 1 / -1; opacity: 0.55; }
 
+.push-count { margin: 6px 0 0; font-size: 14px; opacity: 0.85; }
+.push-count b { color: var(--brass); }
+.push-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.push-list li { margin: 0; }
+.push-chip {
+  width: 100%;
+  text-align: left;
+  background: #1a140f;
+  border: 1px solid var(--line);
+  padding: 6px 8px;
+  font-size: 12px;
+  line-height: 1.35;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.push-chip:hover { border-color: var(--paper); }
+.push-chip.picked { border-color: var(--brass); background: #2c2117; }
+.verdict {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  font-size: 12px;
+  line-height: 1.5;
+  background: #1a140f;
+}
+.verdict b { display: block; margin-bottom: 4px; letter-spacing: 0.1em; }
+.verdict[data-swap="true"] { border-color: var(--moss); }
+.verdict[data-swap="true"] b { color: var(--moss); }
+.verdict[data-swap="false"] { border-color: var(--rust); }
+.verdict[data-swap="false"] b { color: #e8b898; }
+.verdict p { margin: 0; opacity: 0.82; }
+
+.level-record { margin-bottom: 10px; }
+.level-head {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 8px;
+  text-align: left;
+  background: #1a140f;
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.level-head:hover { border-color: var(--paper); }
+.level-head .summary { font-size: 12px; opacity: 0.7; }
+.level-head small { grid-column: 1 / -1; opacity: 0.55; }
+.level-head .caret { position: absolute; }
+.method-list { margin-top: 8px; padding-left: 10px; border-left: 1px solid var(--line); }
+.method-row { padding: 6px 0; border-bottom: 1px dashed var(--line); }
+.method-row.legacy { opacity: 0.8; }
+.method-title { margin: 0 0 4px; font-size: 13px; }
+.method-title small { opacity: 0.55; margin-left: 6px; }
+.levels .best em { font-style: normal; color: var(--brass); }
+
 @media (max-width: 1100px) {
   .bench { grid-template-columns: 1fr; }
   .mast { flex-direction: column; align-items: flex-start; }

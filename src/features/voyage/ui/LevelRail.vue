@@ -1,6 +1,13 @@
 <script setup lang="ts">
 defineProps<{
-  catalog: { id: string; title: string; blurb: string; bestSteps: number | null; current: boolean }[];
+  catalog: {
+    id: string;
+    title: string;
+    blurb: string;
+    bestSteps: number | null;
+    methodCount: number;
+    current: boolean;
+  }[];
 }>();
 defineEmits<{ select: [id: string]; reset: [] }>();
 </script>
@@ -17,7 +24,13 @@ defineEmits<{ select: [id: string]; reset: [] }>();
           @click="$emit('select', level.id)"
         >
           <span class="name">{{ level.title }}</span>
-          <span class="best">{{ level.bestSteps == null ? "尚未通关" : `${level.bestSteps} 步` }}</span>
+          <span class="best">
+            <template v-if="level.bestSteps == null">尚未通关</template>
+            <template v-else>
+              {{ level.bestSteps }} 步
+              <em v-if="level.methodCount > 0"> · {{ level.methodCount }} 工法</em>
+            </template>
+          </span>
         </button>
         <p>{{ level.blurb }}</p>
       </li>

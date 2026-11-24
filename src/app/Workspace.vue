@@ -3,7 +3,7 @@ import { onMounted, onUnmounted } from "vue";
 import { StageView, TileLegend } from "@/features/atlas";
 import { GadgetPanel } from "@/features/gadget";
 import { MoverHud } from "@/features/hauler";
-import { StepMeter } from "@/features/ledger";
+import { PushLedger, StepMeter } from "@/features/ledger";
 import { LevelRail, RecordBoard } from "@/features/voyage";
 import { dirFromKey, shouldCapture } from "./keys";
 import { useWorkshop } from "./useWorkshop";
@@ -13,7 +13,7 @@ const { document, notice } = shop;
 const { title, blurb } = shop.atlas;
 const { counts } = shop.hauler;
 const { summary } = shop.gadget;
-const { steps, status, coverage } = shop.ledger;
+const { steps, pushes, status, coverage } = shop.ledger;
 const { catalog, completed } = shop.voyage;
 
 function onKey(event: KeyboardEvent): void {
@@ -44,7 +44,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKey));
     <div class="bench">
       <aside class="rail">
         <LevelRail :catalog="catalog" @select="shop.selectLevel" @reset="shop.reset" />
-        <RecordBoard :completed="completed" />
+        <RecordBoard :completed="completed" :records="document.records" />
       </aside>
       <main class="stage">
         <div class="stage-head">
@@ -55,7 +55,8 @@ onUnmounted(() => window.removeEventListener("keydown", onKey));
         <MoverHud :counts="counts" />
       </main>
       <aside class="side">
-        <StepMeter :steps="steps" :status="status" :coverage="coverage" />
+        <StepMeter :steps="steps" :pushes="pushes" :status="status" :coverage="coverage" />
+        <PushLedger :document="document" :pushes="pushes" :steps="steps" />
         <GadgetPanel :document="document" :summary="summary" />
         <TileLegend />
       </aside>

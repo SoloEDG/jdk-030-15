@@ -8,10 +8,6 @@ export function cloneLevel(level: RuntimeLevel): RuntimeLevel {
   return structuredClone(level);
 }
 
-export function createId(prefix: string): string {
-  return `${prefix}-${crypto.randomUUID().slice(0, 8)}`;
-}
-
 export function sameCell(a: Vec, b: Vec): boolean {
   return a.x === b.x && a.y === b.y;
 }
